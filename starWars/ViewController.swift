@@ -24,11 +24,26 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
-        networkManager.getData(type: .people) { items in
-            self.starWarsItems = items
-            self.tableView.reloadData()
+        fetchData(for: .people)
+        fetchData(for: .planet)
+    }
+    
+    func fetchData(for type: ReguestType) {
+        networkManager.getData(type: type) { [weak self] items in
+            guard let self = self else { return }
+            
+            if type == .people {
+                self.starWarsItems = items
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            } else if type == .planet {
+                self.starWarsItems = items
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            }
         }
-        networkManager.getData(type: .planet)
     }
     
     func setupTableView() {
